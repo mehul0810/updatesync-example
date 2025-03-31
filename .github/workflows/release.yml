@@ -5,33 +5,40 @@ on:
     types: [released]
 
 permissions:
-  contents: write  # This is required to upload release assets
+  contents: write  # Required to upload release assets
 
 jobs:
   build:
     name: Build Plugin Artifact
     runs-on: ubuntu-latest
 
-    steps:
-      - uses: actions/checkout@v2
+    env:
+      RELEASE_DIR: ${{ github.workspace }}/release
+      ARTIFACT_NAME: updatesync-example.zip
+      ARTIFACT_PATH: ${{ github.workspace }}/updatesync-example.zip
 
-      - name: Install composer dependencies
-        uses: php-actions/composer@v2
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Install Composer Dependencies
+        uses: php-actions/composer@v6
         with:
           dev: no
+          args: --prefer-dist --no-progress --no-interaction
 
-      - name: Generate plugin artifact
+      - name: Generate Plugin Artifact
         run: |
-          rsync -rc --exclude-from="$GITHUB_WORKSPACE/.distignore" "$GITHUB_WORKSPACE/" release/ --delete --delete-excluded
-          cd "${GITHUB_WORKSPACE}/release" || exit
-          zip -r "${GITHUB_WORKSPACE}/example-plugin.zip" .
+          set -e
+          mkdir -p "$RELEASE_DIR"
+          rsync -rc --exclude-from="${{ github.workspace }}/.distignore" "${{ github.workspace }}/" "$RELEASE_DIR/" --delete --delete-excluded
+          
+          cd "$RELEASE_DIR" || exit 1
+          zip -r "$ARTIFACT_PATH" .
 
-      - name: Upload release asset
-        uses: actions/upload-release-asset@v1
+      - name: Upload Release Asset
+        uses: softprops/action-gh-release@v1
+        with:
+          files: ${{ env.ARTIFACT_PATH }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ github.event.release.upload_url }}
-          asset_path: ${{ github.workspace }}/updatesync-example.zip
-          asset_name: updatesync-example.zip
-          asset_content_type: application/zip
