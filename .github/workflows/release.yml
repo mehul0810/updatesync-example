@@ -32,6 +32,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ github.event.release.upload_url }}
-          asset_path: ${{ github.workspace }}/example-plugin.zip
-          asset_name: example-plugin.zip
+          asset_path: ${{ github.workspace }}/updatesync-example.zip
+          asset_name: updatesync-example.zip
           asset_content_type: application/zip
