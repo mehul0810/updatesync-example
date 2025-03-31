@@ -3,7 +3,7 @@
  * Plugin Name: UpdateSync Example
  * Plugin URI: 
  * Description: An example plugin to test UpdateSync automatic update functionality.
- * Version: 1.0.0
+ * Version: 1.0.1
  * Author: Mehul Gohil
  * Author URI: https://mehulgohil.com
  * Update URI: https://github.com/mehul0810/updatesync-example
